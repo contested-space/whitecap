@@ -24,20 +24,22 @@ init(Name, Opts, Parent) ->
     case safe_register(Name) of
         true ->
             proc_lib:init_ack(Parent, {ok, self()}),
+            Ip = maps:get(ip, Opts, {0, 0, 0, 0}),
             Port = maps:get(port, Opts, 8080),
-            {ok, LSocket} = listen(Port),
+            {ok, LSocket} = listen(Ip, Port),
             loop(LSocket, Opts);
         {false, Pid} ->
             proc_lib:init_ack(Parent, {error, {already_started, Pid}})
     end.
 
 %% private
-listen(Port) ->
+listen(Ip, Port) ->
     Options = [
         binary,
         {active, false},
         {backlog, 4096},
-        {reuseaddr, true}
+        {reuseaddr, true},
+        {ip, Ip}
     ] ++ so_reuseport(),
 
     gen_tcp:listen(Port, Options).
