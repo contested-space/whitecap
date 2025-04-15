@@ -39,7 +39,8 @@ listen(Ip, Port) ->
         {active, false},
         {backlog, 4096},
         {reuseaddr, true},
-        {ip, Ip}
+        {ip, Ip},
+	{inet_backend, socket}
     ] ++ so_reuseport(),
 
     gen_tcp:listen(Port, Options).
